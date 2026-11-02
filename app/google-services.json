@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552120319661",
+    "project_id": "dominochaos-e0778",
+    "storage_bucket": "dominochaos-e0778.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552120319661:android:ccf2b52fad6cd5b4349024",
+        "android_client_info": {
+          "package_name": "com.udistrital.dominochaos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtTphEfD4pfh7MBPp0AsFyUN5Mu4JBFj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
