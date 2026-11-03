@@ -25,46 +25,81 @@ class RoomRepository {
             winnerPlayerUid = null,
             turnPlayerUid = hostPlayer.uid,
             finished = false,
-            active = true
+            active = true,
         )
 
         newRoomRef.setValue(room)
         return room
     }
 
-    fun joinOpenRoom(guestPlayer: PlayerModel, roomCode:String, onResult: (RoomModel?) -> Unit) {
-        roomsRef.orderByChild("id").equalTo(roomCode.trim()).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var targetRoom: Pair<String, RoomModel>? = null
+    fun joinRoom(roomCode: String, guestPlayer: PlayerModel, onResult: (Boolean) -> Unit) {
+        val code = roomCode.trim()
+        if (code.isEmpty()) {
+            onResult(false)
+            return
+        }
 
-                for (child in snapshot.children) {
-                    val room = child.getValue(RoomModel::class.java)
-                    if (room != null && room.player2 == null && !room.finished) {
-                        targetRoom = Pair(child.key ?: room.id ?: "", room)
+        roomsRef.orderByChild("id").equalTo(code)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        onResult(false)
+                        return
+                    }
+
+                    var found = false
+                    for (child in snapshot.children) {
+                        val room = child.getValue(RoomModel::class.java)
+                        if (room != null && room.player2 == null) {
+                            found = true
+                            val updates = mapOf(
+                                "player2" to guestPlayer,
+                                "turnPlayerUid" to room.player1.uid
+                            )
+                            child.key?.let { key ->
+                                roomsRef.child(key).updateChildren(updates)
+                                    .addOnSuccessListener { onResult(true) }
+                                    .addOnFailureListener { onResult(false) }
+                            } ?: onResult(false)
+                            break
+                        }
+                    }
+                    if (!found) {
+                        onResult(false)
                     }
                 }
 
-                if (targetRoom == null) {
-                    onResult(null)
-                    return
+                override fun onCancelled(error: DatabaseError) {
+                    onResult(false)
                 }
-
-                val roomId = targetRoom.first
-                val room = targetRoom.second
-                val updatedRoom = room.copy(
-                    id = roomId,
-                    player2 = guestPlayer,
-                    turnPlayerUid = room.player1.uid
-                )
-
-                roomsRef.child(roomId).child("player2").setValue(guestPlayer)
-                roomsRef.child(roomId).child("turnPlayerUid").setValue(room.player1.uid)
-                onResult(updatedRoom)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                onResult(null)
-            }
-        })
+            })
     }
+
+//    fun joinRoom(roomCode:String, guestPlayer: PlayerModel, onResult: (Boolean) -> Unit){
+//        roomsRef.orderByChild("id").equalTo(roomCode.trim())
+//            .addListenerForSingleValueEvent(object : ValueEventListener{
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    onResult(snapshot.exists())
+//                    for(child in snapshot.children){
+//                        val room = child.getValue(RoomModel::class.java)
+//                        if(room != null && room.player2 == null){
+//                            val updates = mapOf(
+//                                "player2" to guestPlayer,
+//                                "turnPlayerUid" to room.player1.uid
+//                            )
+//                            roomsRef.child(child.key!!).updateChildren(updates)
+//                                .addOnSuccessListener{onResult(true)}.addOnFailureListener { onResult(false) }
+//                        }else{
+//                            onResult(false)
+//                        }
+//                    }
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    onResult(false)
+//                }
+//            })
+//    }
+
+
 }
