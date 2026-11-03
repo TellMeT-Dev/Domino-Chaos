@@ -2,16 +2,15 @@ package com.udistrital.dominochaos.domain
 
 import kotlinx.serialization.Serializable
 
-/** Estado de la sala/partida. */
+
 enum class GameStatus { WAITING, IN_PROGRESS, ROUND_OVER, FINISHED }
 
-/** Modo de juego (define cómo se completa la sala). */
+
 enum class GameMode { ONLINE }
 
-/** Motivo por el que terminó una ronda. */
+
 enum class RoundEndReason { WENT_OUT, BLOCKED, VOID }
 
-/** Resultado de una ronda (para la pantalla de resultados). */
 @Serializable
 data class RoundResult(
     val round: Int,
@@ -20,7 +19,6 @@ data class RoundResult(
     val reason: RoundEndReason
 )
 
-/** Reglas configurables de la partida (decisiones documentadas en REGLAS.md). */
 @Serializable
 data class GameConfig(
     val totalPlayers: Int = 2,
@@ -37,10 +35,7 @@ data class GameConfig(
     }
 }
 
-/**
- * Estado completo de una partida: tablero, jugadores, pozo, turno, ronda,
- * evento activo y resultados. Es la unidad que se serializa para sincronizar.
- */
+
 @Serializable
 data class Game(
     val code: String = "",
