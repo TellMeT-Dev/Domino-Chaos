@@ -26,14 +26,12 @@ class RoomViewModel : ViewModel() {
         _model.value = room
     }
 
-    fun joinOpenRoom(roomCode: String) {
+    fun joinRoom(roomCode: String, onResult: (Boolean) -> Unit){
         val currentUser = auth.currentUser ?: return
-        val guest = PlayerModel(
+        val guestPlayer = PlayerModel(
             uid = currentUser.uid,
             email = currentUser.email.orEmpty()
         )
-        repository.joinOpenRoom(guest, roomCode) { room ->
-            _model.value = room
-        }
+        repository.joinRoom(roomCode, guestPlayer, onResult)
     }
 }

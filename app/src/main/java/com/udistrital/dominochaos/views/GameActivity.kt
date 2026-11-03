@@ -1,10 +1,12 @@
 package com.udistrital.dominochaos.views
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.browser.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +17,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.udistrital.dominochaos.data.enums.TypeScreen
+import com.udistrital.dominochaos.data.models.PlayerModel
 import com.udistrital.dominochaos.viewmodels.RoomViewModel
 import com.udistrital.dominochaos.views.screens.GameScreen
 import com.udistrital.dominochaos.views.screens.LobbyScreen
@@ -89,8 +93,19 @@ class GameActivity : ComponentActivity() {
                                         currentScreen = TypeScreen.ROOM_SELECTION
                                     },
                                     onJoinGameClick = { code ->
-                                        roomViewModel.joinOpenRoom(code)
-                                        currentScreen = TypeScreen.GAME
+                                        roomViewModel.joinRoom(code) {
+                                            valid ->
+
+                                            if(valid){
+                                                currentScreen = TypeScreen.GAME
+                                            } else {
+                                                Toast.makeText(
+                                                    baseContext,
+                                                    "Invalid Session",
+                                                    Toast.LENGTH_SHORT,
+                                                ).show()
+                                            }
+                                        }
                                     }
                                 )
                             }

@@ -13,18 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.udistrital.dominochaos.R
 
 @Composable
 fun SearchScreen(
     onCancelClick: () -> Unit = {},
     onJoinGameClick: (code: String) -> Unit = {}
 ){
-    var room_id by remember { mutableStateOf("") }
+    var roomId by remember { mutableStateOf("") }
 
     val clipboardManager = LocalClipboardManager.current
 
@@ -41,7 +43,7 @@ fun SearchScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Lobby de Espera",
+                text = stringResource(R.string.search_title),
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
@@ -50,7 +52,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Comparte este código con tu rival",
+                text = stringResource(R.string.search_title_label),
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 15.sp
             )
@@ -83,9 +85,9 @@ fun SearchScreen(
                     }
 
                     OutlinedTextField(
-                        value = room_id,
-                        onValueChange = {room_id = it},
-                        label = {Text("Ingresa Codigo de Sala")},
+                        value = roomId,
+                        onValueChange = {roomId = it},
+                        label = {stringResource(R.string.insert_code_button)},
                         singleLine = true
                     )
                 }
@@ -94,7 +96,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = {onJoinGameClick(room_id)},
+                onClick = {onJoinGameClick(roomId)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp)
@@ -106,7 +108,7 @@ fun SearchScreen(
                 )
             ) {
                 Text(
-                    text = "INICIAR PARTIDA",
+                    text = stringResource(R.string.start_game),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -117,13 +119,17 @@ fun SearchScreen(
 
             TextButton(onClick = onCancelClick) {
                 Text(
-                    text = "Cancelar y salir",
+                    text = stringResource(R.string.cancel),
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 14.sp
                 )
             }
         }
     }
+}
+
+fun InvalidSession(){
+
 }
 
 @Preview(showBackground = true)
