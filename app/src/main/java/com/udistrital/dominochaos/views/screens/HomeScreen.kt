@@ -1,12 +1,11 @@
-package com.udistrital.hockeygame.views.screens
+package com.udistrital.dominochaos.views.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SportsHockey
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +21,8 @@ import com.udistrital.dominochaos.R
 
 @Composable
 fun HomeScreen(
-    onClickGame: () -> Unit,
-    onClickMultiplayer: () -> Unit = {}
+    onClickMultiplayer: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -48,7 +47,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.SportsHockey,
+                        imageVector = Icons.Default.Casino,
                         contentDescription = null,
                         tint = Color(0xFF00AEFF),
                         modifier = Modifier.size(44.dp)
@@ -67,7 +66,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Ready for the next match?",
+                    text = stringResource(R.string.home_subtitle),
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 15.sp
                 )
@@ -88,7 +87,7 @@ fun HomeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "ESTADÍSTICAS",
+                        text = stringResource(R.string.home_mode_label),
                         color = Color.White.copy(alpha = 0.6f),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -112,9 +111,9 @@ fun HomeScreen(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
                 Button(
                     onClick = onClickMultiplayer,
                     modifier = Modifier
@@ -139,13 +138,21 @@ fun HomeScreen(
                         color = Color.White
                     )
                 }
-            }
 
-            Text(
-                text = "Components 301 • 2026 • Hockey Game",
-                color = Color.White.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodySmall
-            )
+                TextButton(onClick = onLogout) {
+                    Text(
+                        text = stringResource(R.string.logout),
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 14.sp
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.home_footer),
+                    color = Color.White.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
@@ -153,5 +160,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onClickGame = {}, onClickMultiplayer = {})
+    HomeScreen(onClickMultiplayer = {}, onLogout = {})
 }

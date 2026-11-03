@@ -4,22 +4,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.udistrital.dominochaos.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
@@ -28,7 +28,9 @@ fun SearchScreen(
 ){
     var roomId by remember { mutableStateOf("") }
 
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -75,19 +77,28 @@ fun SearchScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = { clipboardManager.setText(AnnotatedString("")) }
+                        onClick = {
+                            scope.launch {
+                                val entry = clipboard.getClipEntry()
+                                val clip = entry?.clipData
+                                if (clip != null && clip.itemCount > 0) {
+                                    val pasted = clip.getItemAt(0).coerceToText(context).toString()
+                                    if (pasted.isNotBlank()) roomId = pasted.trim()
+                                }
+                            }
+                        }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ContentCopy,
-                            contentDescription = "Copiar Código",
+                            imageVector = Icons.Default.ContentPaste,
+                            contentDescription = "Pegar código",
                             tint = Color.White
                         )
                     }
 
                     OutlinedTextField(
                         value = roomId,
-                        onValueChange = {roomId = it},
-                        label = {stringResource(R.string.insert_code_button)},
+                        onValueChange = { roomId = it.uppercase() },
+                        label = { Text(stringResource(R.string.insert_code_button)) },
                         singleLine = true
                     )
                 }
@@ -126,10 +137,6 @@ fun SearchScreen(
             }
         }
     }
-}
-
-fun InvalidSession(){
-
 }
 
 @Preview(showBackground = true)

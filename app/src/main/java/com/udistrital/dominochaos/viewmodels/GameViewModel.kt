@@ -8,14 +8,13 @@ import com.udistrital.dominochaos.domain.End
 import com.udistrital.dominochaos.domain.Game
 import com.udistrital.dominochaos.domain.GameAction
 import com.udistrital.dominochaos.domain.GameEngine
-import com.udistrital.dominochaos.domain.GameMode
 import com.udistrital.dominochaos.domain.GameStatus
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import com.udistrital.dominochaos.domain.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,7 +39,10 @@ class GameViewModel(
     private val busy = MutableStateFlow(false)
     private val errorMsg = MutableStateFlow<String?>(null)
 
+    private var joinAttempts = 0
+
     private val gameFlow: StateFlow<Game?> = repo.observeGame(code)
+        .onEach { game -> autoJoinIfNeeded(game) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val uiState: StateFlow<GameUiState> = combine(
@@ -82,7 +84,7 @@ class GameViewModel(
     fun playAt(end: End) {
         val sel = selection.value
         val tileId = sel.tileId ?: return
-        submit(seatId(), GameAction.Play(
+        submit(myId, GameAction.Play(
             tileId = tileId,
             end = end,
             useComodin = sel.useComodin,
@@ -91,16 +93,16 @@ class GameViewModel(
         ))
     }
 
-    fun draw() = submit(seatId(), GameAction.Draw)
+    fun draw() = submit(myId, GameAction.Draw)
 
-    fun pass() = submit(seatId(), GameAction.Pass)
+    fun pass() = submit(myId, GameAction.Pass)
 
-    fun useSalto() = submit(seatId(), GameAction.UseSalto)
+    fun useSalto() = submit(myId, GameAction.UseSalto)
 
-    fun useInversion() = submit(seatId(), GameAction.UseInversion)
+    fun useInversion() = submit(myId, GameAction.UseInversion)
 
     fun useIntercambio(targetPlayerId: String, targetTileId: String, myTileId: String) =
-        submit(seatId(), GameAction.UseIntercambio(targetPlayerId, targetTileId, myTileId))
+        submit(myId, GameAction.UseIntercambio(targetPlayerId, targetTileId, myTileId))
 
     fun startMatch() = submit(myId, GameAction.StartMatch)
 
@@ -123,13 +125,20 @@ class GameViewModel(
     // ---------------------------------------------------------------------
 
 
-    private fun seatId(): String {
-        val current = gameFlow.value?.currentPlayer
-        return when {
-            current == null -> myId
-            !current.isBot && current.id != myId &&
-                gameFlow.value?.mode != GameMode.ONLINE -> current.id
-            else -> myId
+    /**
+     * El invitado se une solo a la partida cuando el anfitrión ya la creó:
+     * si la sala sigue en espera y yo todavía no estoy dentro, me una.
+     * En modo en línea cada jugador solo actúa consigo mismo.
+     */
+    private fun autoJoinIfNeeded(game: Game?) {
+        if (game == null || joinAttempts >= MAX_JOIN_ATTEMPTS) return
+        if (game.player(myId) != null) return
+        if (game.status != GameStatus.WAITING) return
+
+        joinAttempts++
+        val name = session.playerName ?: "Jugador"
+        viewModelScope.launch {
+            repo.joinGame(code, Player(id = myId, name = name))
         }
     }
 
@@ -160,16 +169,11 @@ class GameViewModel(
         }
 
         val current = game.currentPlayer
-        val seatId = when {
-            current == null -> myId
-            !current.isBot && current.id != myId && game.mode != GameMode.ONLINE -> current.id
-            else -> myId
-        }
-        val me = game.player(seatId) ?: game.player(myId)
-        val options = GameEngine.turnOptions(game, seatId)
+        val me = game.player(myId)
+        val options = GameEngine.turnOptions(game, myId)
         val selectedTile = me?.hand?.find { it.id == sel.tileId }
         val legalEnds = if (selectedTile != null && options.isYourTurn) {
-            GameEngine.legalEndsFor(game, seatId, selectedTile.id, sel.useComodin)
+            GameEngine.legalEndsFor(game, myId, selectedTile.id, sel.useComodin)
         } else {
             emptyList()
         }
@@ -181,7 +185,7 @@ class GameViewModel(
             mode = game.mode,
             isHost = game.hostId == myId,
             me = me,
-            activeSeatId = if (options.isYourTurn) seatId else null,
+            activeSeatId = if (options.isYourTurn) myId else null,
             players = game.players.map { player ->
                 PlayerUi(
                     id = player.id,
@@ -219,6 +223,6 @@ class GameViewModel(
     }
 
     private companion object {
-        const val BOT_DELAY_MS = 700L
+        const val MAX_JOIN_ATTEMPTS = 3
     }
 }

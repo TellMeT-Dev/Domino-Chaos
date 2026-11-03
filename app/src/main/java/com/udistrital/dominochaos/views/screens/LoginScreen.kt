@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.SportsHockey
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun LoginScreen(
     onLoginClick: (email: String, password: String) -> Unit,
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: (email: String, password: String) -> Unit = { _, _ -> }
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var isRegister by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -46,8 +47,8 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = Icons.Default.SportsHockey,
-                contentDescription = "Hockey Logo",
+                imageVector = Icons.Default.Casino,
+                contentDescription = "Domino Chaos Logo",
                 tint = Color.White,
                 modifier = Modifier.size(72.dp)
             )
@@ -55,14 +56,14 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Bienvenido",
+                text = if (isRegister) "Crear cuenta" else "Bienvenido",
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Inicia sesión para ingresar al juego",
+                text = if (isRegister) "Regístrate para jugar en línea" else "Inicia sesión para ingresar al juego",
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 15.sp
             )
@@ -144,7 +145,10 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
-                        onClick = { onLoginClick(email, password) },
+                        onClick = {
+                            if (isRegister) onRegisterClick(email, password)
+                            else onLoginClick(email, password)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(54.dp)
@@ -155,7 +159,7 @@ fun LoginScreen(
                         )
                     ) {
                         Text(
-                            text = "INGRESAR",
+                            text = if (isRegister) "REGISTRARME" else "INGRESAR",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -166,9 +170,10 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            TextButton(onClick = onRegisterClick) {
+            TextButton(onClick = { isRegister = !isRegister }) {
                 Text(
-                    text = "¿No tienes cuenta? Regístrate aquí",
+                    text = if (isRegister) "¿Ya tienes cuenta? Inicia sesión"
+                    else "¿No tienes cuenta? Regístrate aquí",
                     color = Color.White.copy(alpha = 0.9f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
@@ -181,5 +186,5 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen({email, password ->})
+    LoginScreen(onLoginClick = { _, _ -> }, onRegisterClick = { _, _ -> })
 }

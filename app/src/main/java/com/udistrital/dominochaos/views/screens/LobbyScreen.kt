@@ -1,5 +1,6 @@
 package com.udistrital.dominochaos.views.screens
 
+import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 @Composable
 fun LobbyScreen(
@@ -27,7 +30,9 @@ fun LobbyScreen(
     onCancelClick: () -> Unit = {},
     onStartGameClick: () -> Unit = {}
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -93,7 +98,12 @@ fun LobbyScreen(
 
                         }
                         IconButton(
-                            onClick = { clipboardManager.setText(AnnotatedString(roomCode)) }
+                            onClick = {
+                                scope.launch {
+                                    val clip = ClipData.newPlainText("Código de sala", roomCode)
+                                    clipboard.setClipEntry(ClipEntry(clip))
+                                }
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ContentCopy,

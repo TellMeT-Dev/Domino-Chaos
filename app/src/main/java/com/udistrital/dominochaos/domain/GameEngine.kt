@@ -107,11 +107,8 @@ object GameEngine {
                     GameAction.UseSalto -> salto(game, player)
                     is GameAction.UseIntercambio -> intercambio(game, player, action)
                     GameAction.UseInversion -> inversion(game, player)
-                    else -> failure(game, GameError.INVALID_ACTION)
                 }
             }
-
-            else -> failure(game, GameError.INVALID_ACTION)
         }
     }
 

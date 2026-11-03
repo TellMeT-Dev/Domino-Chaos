@@ -39,8 +39,6 @@ import com.udistrital.dominochaos.domain.RoundEndReason
 import com.udistrital.dominochaos.domain.TurnOptions
 import com.udistrital.dominochaos.viewmodels.GameUiState
 import com.udistrital.dominochaos.viewmodels.GameViewModel
-import com.udistrital.dominochaos.viewmodels.PlayerUi
-import com.udistrital.dominochaos.viewmodels.asMessage
 import com.udistrital.dominochaos.views.Components.BoardComponent
 import com.udistrital.dominochaos.views.Components.DominoTileComponent
 import com.udistrital.dominochaos.views.Components.PlayerComponent

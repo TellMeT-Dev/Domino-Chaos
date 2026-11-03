@@ -1,18 +1,27 @@
 <resources>
     <string name="app_name">DominoChaos</string>
 
-    <string name="home_title">Welcome to Hockey Game</string>
-    <string name="home_btn_play">Play</string>
-    <string name="home_score">Your last score is</string>
-    <string name="home_btn_back">Back</string>
+    <!-- Inicio -->
+    <string name="home_title">Domino Chaos</string>
+    <string name="home_subtitle">Juega en línea con otro jugador</string>
+    <string name="home_mode_label">MODO DE JUEGO</string>
+    <string name="home_score">Multijugador en línea</string>
+    <string name="home_btn_play">JUGAR EN LÍNEA</string>
+    <string name="home_footer">Domino Chaos · 2026 · Multijugador en línea</string>
+    <string name="logout">Cerrar sesión</string>
 
-    <string name="search_title">Search a Room</string>
-    <string name="search_title_label">Introduce your friend\'s code</string>
-    <string name="insert_code_button">Introduce a code</string>
-    <string name="start_game">Join to the Room</string>
-    <string name="cancel">Cancel and Exit</string>
+    <!-- Buscar sala -->
+    <string name="search_title">Buscar sala</string>
+    <string name="search_title_label">Introduce el código de tu amigo</string>
+    <string name="insert_code_button">Código de la sala</string>
+    <string name="start_game">Unirse a la sala</string>
+    <string name="cancel">Cancelar y salir</string>
 
-    <string name="toast_invalid_session">Invalid Session</string>
-
-
+    <!-- Errores -->
+    <string name="error_create_room">No se pudo crear la sala. Revisa tu conexión.</string>
+    <string name="error_join_room">No se pudo unir a esa sala. Verifica el código.</string>
+    <string name="error_auth">No se pudo iniciar sesión. Revisa tus datos.</string>
+    <string name="error_register">No se pudo crear la cuenta. Revisa tus datos.</string>
+    <string name="error_empty_credentials">Ingresa correo y contraseña.</string>
+    <string name="error_short_password">La contraseña debe tener al menos 6 caracteres.</string>
 </resources>

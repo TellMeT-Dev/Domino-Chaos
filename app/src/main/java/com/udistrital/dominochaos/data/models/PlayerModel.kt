@@ -1,6 +1,7 @@
 package com.udistrital.dominochaos.data.models
 
+/** Jugador dentro de una sala (solo identificadores, no la partida). */
 data class PlayerModel(
-    val uid: String = "",
-    val email: String = ""
+    var uid: String = "",
+    var email: String = ""
 )

@@ -7,47 +7,22 @@ import com.udistrital.dominochaos.domain.GameError
 import com.udistrital.dominochaos.domain.GameMode
 import com.udistrital.dominochaos.domain.Player
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class GameSummary(
-    val code: String = "",
-    val hostName: String = "",
-    val playerCount: Int = 0,
-    val totalPlayers: Int = 2,
-    val mode: GameMode = GameMode.ONLINE,
-    val createdAt: Long = 0L
-)
-
-fun Game.toSummary(): GameSummary = GameSummary(
-    code = code,
-    hostName = players.firstOrNull { it.id == hostId }?.name ?: players.firstOrNull()?.name ?: "",
-    playerCount = players.size,
-    totalPlayers = config.totalPlayers,
-    mode = mode,
-    createdAt = createdAt
-)
-
-class GameActionException(
-    val error: GameError,
-    detail: String = error.name
-) : Exception(detail)
-
-
+/**
+ * Contrato de la partida en línea. La implementación real es
+ * [FirebaseGameRepository]; la partida entera se guarda como JSON en
+ * `games/{codigo}` dentro de Realtime Database.
+ */
 interface GameRepository {
-
-    val isOnline: Boolean
-
-    fun observeOpenGames(): Flow<List<GameSummary>>
 
     fun observeGame(code: String): Flow<Game?>
 
     suspend fun createGame(
+        code: String,
         host: Player,
-        config: GameConfig,
-        mode: GameMode,
-        otherPlayers: List<Player> = emptyList()
-    ): Result<String>
+        config: GameConfig = GameConfig(),
+        mode: GameMode = GameMode.ONLINE
+    ): Result<Unit>
 
     suspend fun joinGame(code: String, player: Player): Result<Unit>
 
@@ -55,3 +30,8 @@ interface GameRepository {
 
     suspend fun leaveGame(code: String, playerId: String): Result<Unit>
 }
+
+class GameActionException(
+    val error: GameError,
+    detail: String = error.name
+) : Exception(detail)

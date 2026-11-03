@@ -3,7 +3,6 @@ package com.udistrital.dominochaos.viewmodels
 import com.udistrital.dominochaos.data.GameActionException
 import com.udistrital.dominochaos.domain.DominoTile
 import com.udistrital.dominochaos.domain.End
-import com.udistrital.dominochaos.domain.GameAction
 import com.udistrital.dominochaos.domain.GameError
 import com.udistrital.dominochaos.domain.GameMode
 import com.udistrital.dominochaos.domain.GameStatus
