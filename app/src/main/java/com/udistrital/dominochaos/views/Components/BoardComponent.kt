@@ -20,9 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.domain.DominoTile
 import com.udistrital.dominochaos.domain.End
 import com.udistrital.dominochaos.domain.PlacedTile
@@ -54,12 +56,13 @@ fun BoardComponent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = if (awaitingPlacement) "Coloca la primera ficha" else "Tablero vacío",
+                    text = if (awaitingPlacement) stringResource(R.string.place_first_tile)
+                    else stringResource(R.string.empty_board),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 EndZone(
-                    label = "Aquí",
+                    label = stringResource(R.string.here),
                     value = null,
                     enabled = awaitingPlacement,
                     playable = legalEnds.isNotEmpty(),

@@ -1,5 +1,7 @@
 package com.udistrital.dominochaos.views.screens
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,10 +31,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.domain.Power
 import com.udistrital.dominochaos.domain.PowerUses
 import com.udistrital.dominochaos.domain.RoundEndReason
@@ -52,6 +60,27 @@ fun GameScreen(
     modifier: Modifier = Modifier
 ) {
     val state by vm.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val config = LocalConfiguration.current
+
+    val gameBitmap = remember {
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.game
+        ).asImageBitmap()
+    }
+
+    Canvas(
+        modifier = Modifier
+    ){
+        drawImage(
+            image = gameBitmap,
+            dstSize = IntSize(
+                config.screenWidthDp * 4,
+                config.screenHeightDp * 4
+            )
+        )
+    }
 
     when {
         state.loading -> Box(
@@ -67,12 +96,12 @@ fun GameScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "No se encontró la partida \"${state.code}\".",
+                text = stringResource(R.string.game_not_found, state.code),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
             Button(onClick = onExit, modifier = Modifier.padding(top = 16.dp)) {
-                Text("Volver al lobby")
+                Text(stringResource(R.string.back_to_lobby))
             }
         }
 
@@ -102,19 +131,23 @@ private fun GameBody(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ScoreBoard(players = state.players, modifier = Modifier.weight(1f))
-            TextButton(onClick = { showLeaveConfirm = true }) { Text("✕ Salir") }
+            TextButton(onClick = { showLeaveConfirm = true }) {
+                Text(stringResource(R.string.leave_short))
+            }
         }
 
         if (state.busy) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
+        val roundStatus = stringResource(
+            R.string.game_round_status, state.round, state.maxRounds, state.pozoCount
+        )
+        val turnInfo = if (currentName != null && state.inProgress) {
+            stringResource(R.string.game_round_turn, currentName)
+        } else ""
         Text(
-            text = buildString {
-                append("Ronda ${state.round}/${state.maxRounds}")
-                append("  ·  Pozo: ${state.pozoCount}")
-                if (currentName != null && state.inProgress) append("  ·  Turno: $currentName")
-            },
+            text = roundStatus + turnInfo,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -162,13 +195,13 @@ private fun GameBody(
         } else if (state.botThinking) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             Text(
-                text = "La máquina está pensando…",
+                text = stringResource(R.string.bot_thinking),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else if (state.inProgress) {
             Text(
-                text = "Esperando el turno de $currentName…",
+                text = stringResource(R.string.waiting_turn, currentName ?: ""),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -185,10 +218,12 @@ private fun GameBody(
     state.error?.let { message ->
         AlertDialog(
             onDismissRequest = { vm.clearError() },
-            title = { Text("Atención") },
+            title = { Text(stringResource(R.string.attention)) },
             text = { Text(message) },
             confirmButton = {
-                TextButton(onClick = { vm.clearError() }) { Text("Aceptar") }
+                TextButton(onClick = { vm.clearError() }) {
+                    Text(stringResource(R.string.accept))
+                }
             }
         )
     }
@@ -196,18 +231,20 @@ private fun GameBody(
     if (showLeaveConfirm) {
         AlertDialog(
             onDismissRequest = { showLeaveConfirm = false },
-            title = { Text("¿Abandonar la partida?") },
-            text = { Text("Perderás tu turno y la partida terminará para ti.") },
+            title = { Text(stringResource(R.string.leave_confirm_title)) },
+            text = { Text(stringResource(R.string.leave_confirm_body)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showLeaveConfirm = false
                         vm.leave(onLeft = onExit)
                     }
-                ) { Text("Abandonar") }
+                ) { Text(stringResource(R.string.leave)) }
             },
             dismissButton = {
-                TextButton(onClick = { showLeaveConfirm = false }) { Text("Cancelar") }
+                TextButton(onClick = { showLeaveConfirm = false }) {
+                    Text(stringResource(R.string.dialog_cancel))
+                }
             }
         )
     }
@@ -246,7 +283,10 @@ private fun SelectionOptions(state: GameUiState, vm: GameViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (state.chain.isEmpty()) {
-            Text("Orientación:", style = MaterialTheme.typography.labelMedium)
+            Text(
+                stringResource(R.string.orientation_label),
+                style = MaterialTheme.typography.labelMedium
+            )
             FilterChip(
                 selected = !state.reversedFirst,
                 onClick = { vm.setReversedFirst(false) },
@@ -260,7 +300,10 @@ private fun SelectionOptions(state: GameUiState, vm: GameViewModel) {
                 )
             }
         } else if (state.useComodin) {
-            Text("Nuevo extremo:", style = MaterialTheme.typography.labelMedium)
+            Text(
+                stringResource(R.string.new_end_label),
+                style = MaterialTheme.typography.labelMedium
+            )
             FilterChip(
                 selected = state.outwardIsA,
                 onClick = { vm.setOutwardIsA(true) },
@@ -285,14 +328,14 @@ private fun ActionRow(
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (options.canDraw) {
-            OutlinedButton(onClick = onDraw) { Text("🁫 Robar del pozo") }
+            OutlinedButton(onClick = onDraw) { Text(stringResource(R.string.draw)) }
         }
         if (options.canPass) {
-            OutlinedButton(onClick = onPass) { Text("Pasar turno") }
+            OutlinedButton(onClick = onPass) { Text(stringResource(R.string.pass)) }
         }
         if (!options.canDraw && !options.canPass) {
             Text(
-                text = "Selecciona una ficha y un extremo para jugar.",
+                text = stringResource(R.string.select_hint),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
@@ -334,7 +377,10 @@ private fun WaitingPanel(state: GameUiState, vm: GameViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text("Código de la sala", style = MaterialTheme.typography.labelMedium)
+            Text(
+                stringResource(R.string.room_code_label),
+                style = MaterialTheme.typography.labelMedium
+            )
             Text(
                 text = state.code,
                 style = MaterialTheme.typography.headlineMedium,
@@ -342,24 +388,28 @@ private fun WaitingPanel(state: GameUiState, vm: GameViewModel) {
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Jugadores: ${state.players.size}/${state.totalPlayers}" +
-                    " · ${state.players.joinToString { it.name }}",
+                text = stringResource(
+                    R.string.players_line,
+                    state.players.size,
+                    state.totalPlayers,
+                    state.players.joinToString { it.name }
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
             when {
                 state.isHost && state.players.size >= 2 -> Button(onClick = vm::startMatch) {
-                    Text("Empezar partida")
+                    Text(stringResource(R.string.start_match))
                 }
 
                 state.isHost -> Text(
-                    text = "Esperando a otro jugador…",
+                    text = stringResource(R.string.waiting_other),
                     style = MaterialTheme.typography.bodySmall
                 )
 
                 else -> Text(
-                    text = "El anfitrión empezará la partida.",
+                    text = stringResource(R.string.host_will_start),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -374,21 +424,23 @@ private fun RoundResultDialog(state: GameUiState, onNextRound: () -> Unit) {
     val winnerName = state.players.firstOrNull { it.id == result.winnerId }?.name
     AlertDialog(
         onDismissRequest = {},
-        title = { Text("Ronda ${result.round} terminada") },
+        title = { Text(stringResource(R.string.round_done, result.round)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = when {
-                        result.winnerId == null -> "Ronda anulada por empate de pips."
-                        else -> "Gana $winnerName: +${result.points} puntos"
+                        result.winnerId == null -> stringResource(R.string.round_tie)
+                        else -> stringResource(
+                            R.string.round_winner, winnerName ?: "", result.points
+                        )
                     },
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = when (result.reason) {
-                        RoundEndReason.WENT_OUT -> "Se vació la mano de un jugador."
-                        RoundEndReason.BLOCKED -> "Nadie pudo jugar: tablero bloqueado."
-                        RoundEndReason.VOID -> "Empate entre los jugadores."
+                        RoundEndReason.WENT_OUT -> stringResource(R.string.round_went_out)
+                        RoundEndReason.BLOCKED -> stringResource(R.string.round_blocked)
+                        RoundEndReason.VOID -> stringResource(R.string.round_void)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -396,7 +448,7 @@ private fun RoundResultDialog(state: GameUiState, onNextRound: () -> Unit) {
             }
         },
         confirmButton = {
-            Button(onClick = onNextRound) { Text("Siguiente ronda") }
+            Button(onClick = onNextRound) { Text(stringResource(R.string.next_round)) }
         }
     )
 }
@@ -409,14 +461,18 @@ private fun MatchResultDialog(
 ) {
     AlertDialog(
         onDismissRequest = {},
-        title = { Text("¡Partida terminada!") },
+        title = { Text(stringResource(R.string.match_finished)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = when {
-                        state.winnerNames.size > 1 -> "Empate entre ${state.winnerNames.joinToString()}"
-                        state.winnerNames.size == 1 -> "🏆 Ganador: ${state.winnerNames.first()}"
-                        else -> "Sin ganador."
+                        state.winnerNames.size > 1 -> stringResource(
+                            R.string.match_draw, state.winnerNames.joinToString()
+                        )
+                        state.winnerNames.size == 1 -> stringResource(
+                            R.string.match_winner, state.winnerNames.first()
+                        )
+                        else -> stringResource(R.string.no_winner)
                     },
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -424,18 +480,23 @@ private fun MatchResultDialog(
                     .sortedByDescending { it.score }
                     .forEachIndexed { index, player ->
                         Text(
-                            text = "${index + 1}. ${player.name} — ${player.score} pts" +
-                                " (${player.powersUsed} poderes usados)",
+                            text = stringResource(
+                                R.string.ranking_line,
+                                index + 1,
+                                player.name,
+                                player.score,
+                                player.powersUsed
+                            ),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
             }
         },
         confirmButton = {
-            Button(onClick = onRestart) { Text("Reiniciar") }
+            Button(onClick = onRestart) { Text(stringResource(R.string.restart)) }
         },
         dismissButton = {
-            TextButton(onClick = onExit) { Text("Salir al lobby") }
+            TextButton(onClick = onExit) { Text(stringResource(R.string.exit_lobby)) }
         }
     )
 }
@@ -454,12 +515,15 @@ private fun ExchangeDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("⇄ Intercambio") },
+        title = { Text(stringResource(R.string.exchange_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 when {
                     targetId == null -> {
-                        Text("Elige al rival:", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            stringResource(R.string.choose_rival),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                         state.players
                             .filter { it.id != seatId && it.tileCount > 0 }
                             .forEach { player ->
@@ -467,14 +531,18 @@ private fun ExchangeDialog(
                                     onClick = { targetId = player.id },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text("${player.name} (${player.tileCount} fichas)")
+                                    Text(
+                                        stringResource(
+                                            R.string.rival_tiles, player.name, player.tileCount
+                                        )
+                                    )
                                 }
                             }
                     }
 
                     targetTileId == null -> {
                         Text(
-                            text = "Ficha de ${target?.name} que quieres:",
+                            text = stringResource(R.string.pick_tile_of, target?.name ?: ""),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         TilePicker(
@@ -482,12 +550,14 @@ private fun ExchangeDialog(
                             selectedId = targetTileId,
                             onSelect = { targetTileId = it }
                         )
-                        TextButton(onClick = { targetId = null }) { Text("Cambiar de rival") }
+                        TextButton(onClick = { targetId = null }) {
+                            Text(stringResource(R.string.change_rival))
+                        }
                     }
 
                     myTileId == null -> {
                         Text(
-                            text = "Tu ficha que entregas:",
+                            text = stringResource(R.string.your_tile),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         TilePicker(
@@ -495,15 +565,21 @@ private fun ExchangeDialog(
                             selectedId = myTileId,
                             onSelect = { myTileId = it }
                         )
-                        TextButton(onClick = { targetTileId = null }) { Text("Atrás") }
+                        TextButton(onClick = { targetTileId = null }) {
+                            Text(stringResource(R.string.back))
+                        }
                     }
 
                     else -> {
                         Text(
-                            text = "Vas a cambiar una ficha con ${target?.name}.",
+                            text = stringResource(
+                                R.string.exchange_summary, target?.name ?: ""
+                            ),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        TextButton(onClick = { myTileId = null }) { Text("Atrás") }
+                        TextButton(onClick = { myTileId = null }) {
+                            Text(stringResource(R.string.back))
+                        }
                     }
                 }
             }
@@ -517,10 +593,10 @@ private fun ExchangeDialog(
                     val m = myTileId
                     if (t != null && tt != null && m != null) onConfirm(t, tt, m)
                 }
-            ) { Text("Intercambiar") }
+            ) { Text(stringResource(R.string.exchange_confirm)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancelar") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) }
         }
     )
 }

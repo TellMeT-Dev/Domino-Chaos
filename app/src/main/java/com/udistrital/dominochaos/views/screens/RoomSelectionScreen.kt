@@ -1,7 +1,10 @@
 package com.udistrital.dominochaos.views.screens
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -12,46 +15,63 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.udistrital.dominochaos.R
 
 @Composable
 fun RoomSelectionScreen(
     onCreateRoomClick: () -> Unit = {},
     onJoinOpenRoomClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val config = LocalConfiguration.current
+
+    val gameBitmap = remember {
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.pantalla
+        ).asImageBitmap()
+    }
+
+    Canvas(
+        modifier = Modifier
+    ){
+        drawImage(
+            image = gameBitmap,
+            dstSize = IntSize(
+                config.screenWidthDp * 4,
+                config.screenHeightDp * 4
+            )
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0F172A))
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .padding(24.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Bottom
         ) {
-            Icon(
-                imageVector = Icons.Default.MeetingRoom,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(72.dp)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
             Text(
-                text = "Salas de Juego",
+                text = stringResource(R.string.rooms_title),
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Crea una sala o únete con el código de tu amigo",
+                text = stringResource(R.string.rooms_subtitle),
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 15.sp
             )
@@ -90,7 +110,7 @@ fun RoomSelectionScreen(
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
-                            text = "CREAR SALA",
+                            text = stringResource(R.string.rooms_create),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -108,7 +128,7 @@ fun RoomSelectionScreen(
                             color = Color.White.copy(alpha = 0.2f)
                         )
                         Text(
-                            text = "O ÚNETE A SALA DISPONIBLE",
+                            text = stringResource(R.string.rooms_or_join),
                             color = Color.White.copy(alpha = 0.6f),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
@@ -134,7 +154,7 @@ fun RoomSelectionScreen(
                         )
                     ) {
                         Text(
-                            text = "BUSCAR Y UNIRSE",
+                            text = stringResource(R.string.rooms_search_join),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White

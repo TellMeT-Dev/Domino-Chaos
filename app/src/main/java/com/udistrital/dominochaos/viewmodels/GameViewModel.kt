@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.firebase.database.ValueEventListener
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.data.UserSession
 import com.udistrital.dominochaos.domain.End
 import com.udistrital.dominochaos.domain.Game
@@ -33,6 +34,7 @@ private data class Selection(
 class GameViewModel(
     private val repo: GameRepository,
     private val session: UserSession,
+    private val context: Context,
     private val code: String
 ) : ViewModel() {
 
@@ -114,7 +116,7 @@ class GameViewModel(
         busy.value = true
         repo.leaveGame(code, myId) { error ->
             busy.value = false
-            if (error != null) errorMsg.value = error.asMessage()
+            if (error != null) errorMsg.value = error.asMessage(context)
             onLeft()
         }
     }
@@ -127,7 +129,7 @@ class GameViewModel(
         if (game.status != GameStatus.WAITING) return
 
         joinAttempts++
-        val name = session.playerName ?: "Jugador"
+        val name = session.playerName ?: context.getString(R.string.default_player_name)
         repo.joinGame(code, Player(id = myId, name = name)) { }
     }
 
@@ -136,7 +138,7 @@ class GameViewModel(
         repo.submitAction(code, playerId, action) { error ->
             busy.value = false
             if (error != null && !silent) {
-                errorMsg.value = error.asMessage()
+                errorMsg.value = error.asMessage(context)
             }
             if (error == null && action is GameAction.Play) {
                 selection.value = Selection()
@@ -222,6 +224,12 @@ class GameViewModel(
 fun gameViewModelFactory(context: Context, code: String): ViewModelProvider.Factory =
     viewModelFactory {
         initializer {
-            GameViewModel(GameRepository(), UserSession(context.applicationContext), code)
+            val appContext = context.applicationContext
+            GameViewModel(
+                GameRepository(),
+                UserSession(appContext),
+                appContext,
+                code
+            )
         }
     }

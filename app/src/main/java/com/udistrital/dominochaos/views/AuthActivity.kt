@@ -34,8 +34,7 @@ class AuthActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             LoginScreen(
-                onLoginClick = { email, password -> signIn(email, password) },
-                onRegisterClick = { email, password -> register(email, password) }
+                onLoginClick = { email, password -> signIn(email, password) }
             )
         }
     }

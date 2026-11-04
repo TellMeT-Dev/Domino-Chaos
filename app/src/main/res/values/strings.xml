@@ -9,11 +9,100 @@
     <string name="home_footer">Domino Chaos · 2026 · Multijugador en línea</string>
     <string name="logout">Cerrar sesión</string>
 
+    <string name="login_title_register">Crear cuenta</string>
+    <string name="login_title_login">Bienvenido</string>
+    <string name="login_subtitle_register">Regístrate para jugar en línea</string>
+    <string name="login_subtitle_login">Inicia sesión para ingresar al juego</string>
+    <string name="login_email_label">Correo electrónico</string>
+    <string name="login_password_label">Contraseña</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_button">INGRESAR</string>
+
     <string name="search_title">Buscar sala</string>
     <string name="search_title_label">Introduce el código de tu amigo</string>
     <string name="insert_code_button">Código de la sala</string>
     <string name="start_game">Unirse a la sala</string>
     <string name="cancel">Cancelar y salir</string>
+    <string name="paste_code">Pegar código</string>
+
+    <string name="rooms_title">Salas de Juego</string>
+    <string name="rooms_subtitle">Crea una sala o únete con el código de tu amigo</string>
+    <string name="rooms_create">CREAR SALA</string>
+    <string name="rooms_or_join">O ÚNETE A SALA DISPONIBLE</string>
+    <string name="rooms_search_join">BUSCAR Y UNIRSE</string>
+
+    <string name="lobby_title">Lobby de Espera</string>
+    <string name="lobby_share_code">Comparte este código con tu rival</string>
+    <string name="lobby_room_code_label">CÓDIGO DE SALA</string>
+    <string name="lobby_copy_label">Código de sala</string>
+    <string name="lobby_copy_cd">Copiar Código</string>
+    <string name="lobby_players">JUGADORES</string>
+    <string name="lobby_host">Anfitrión</string>
+    <string name="lobby_waiting_player">Esperando jugador...</string>
+    <string name="lobby_ready">Listo</string>
+    <string name="lobby_start">INICIAR PARTIDA</string>
+    <string name="lobby_default_host">Jugador 1</string>
+
+    <string name="no_active_game">No hay una partida activa.</string>
+    <string name="back_to_home">Volver al inicio</string>
+
+    <string name="game_not_found">No se encontró la partida \"%1$s\".</string>
+    <string name="back_to_lobby">Volver al lobby</string>
+    <string name="leave_short">✕ Salir</string>
+    <string name="game_round_status">"Ronda %1$d/%2$d  ·  Pozo: %3$d"</string>
+    <string name="game_round_turn">"  ·  Turno: %1$s"</string>
+    <string name="bot_thinking">La máquina está pensando…</string>
+    <string name="waiting_turn">Esperando el turno de %1$s…</string>
+    <string name="attention">Atención</string>
+    <string name="accept">Aceptar</string>
+    <string name="leave_confirm_title">¿Abandonar la partida?</string>
+    <string name="leave_confirm_body">Perderás tu turno y la partida terminará para ti.</string>
+    <string name="leave">Abandonar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="orientation_label">Orientación:</string>
+    <string name="new_end_label">Nuevo extremo:</string>
+    <string name="draw">🁫 Robar del pozo</string>
+    <string name="pass">Pasar turno</string>
+    <string name="select_hint">Selecciona una ficha y un extremo para jugar.</string>
+    <string name="room_code_label">Código de la sala</string>
+    <string name="players_line">Jugadores: %1$d/%2$d · %3$s</string>
+    <string name="start_match">Empezar partida</string>
+    <string name="waiting_other">Esperando a otro jugador…</string>
+    <string name="host_will_start">El anfitrión empezará la partida.</string>
+    <string name="round_done">Ronda %1$d terminada</string>
+    <string name="round_tie">Ronda anulada por empate de pips.</string>
+    <string name="round_winner">Gana %1$s: +%2$d puntos</string>
+    <string name="round_went_out">Se vació la mano de un jugador.</string>
+    <string name="round_blocked">Nadie pudo jugar: tablero bloqueado.</string>
+    <string name="round_void">Empate entre los jugadores.</string>
+    <string name="next_round">Siguiente ronda</string>
+    <string name="match_finished">¡Partida terminada!</string>
+    <string name="match_draw">Empate entre %1$s</string>
+    <string name="match_winner">🏆 Ganador: %1$s</string>
+    <string name="no_winner">Sin ganador.</string>
+    <string name="ranking_line">%1$d. %2$s — %3$d pts (%4$d poderes usados)</string>
+    <string name="restart">Reiniciar</string>
+    <string name="exit_lobby">Salir al lobby</string>
+    <string name="exchange_title">⇄ Intercambio</string>
+    <string name="choose_rival">Elige al rival:</string>
+    <string name="rival_tiles">%1$s (%2$d fichas)</string>
+    <string name="pick_tile_of">Ficha de %1$s que quieres:</string>
+    <string name="change_rival">Cambiar de rival</string>
+    <string name="your_tile">Tu ficha que entregas:</string>
+    <string name="back">Atrás</string>
+    <string name="exchange_summary">Vas a cambiar una ficha con %1$s.</string>
+    <string name="exchange_confirm">Intercambiar</string>
+
+    <string name="place_first_tile">Coloca la primera ficha</string>
+    <string name="empty_board">Tablero vacío</string>
+    <string name="here">Aquí</string>
+    <string name="player_stats">"🁫 %1$d  ·  ★ %2$d"</string>
+    <string name="power_comodin">★ Comodín ×%1$d</string>
+    <string name="power_salto">⚡ Salto ×%1$d</string>
+    <string name="power_intercambio">⇄ Intercambio ×%1$d</string>
+    <string name="power_inversion">↺ Inversión ×%1$d</string>
+
+    <string name="default_player_name">Jugador</string>
 
     <string name="error_create_room">No se pudo crear la sala. Revisa tu conexión.</string>
     <string name="error_join_room">No se pudo unir a esa sala. Verifica el código.</string>
@@ -21,4 +110,23 @@
     <string name="error_register">No se pudo crear la cuenta. Revisa tus datos.</string>
     <string name="error_empty_credentials">Ingresa correo y contraseña.</string>
     <string name="error_short_password">La contraseña debe tener al menos 6 caracteres.</string>
+
+    <string name="error_game_not_found">No se encontró la partida.</string>
+    <string name="error_not_in_game">No estás en esta partida.</string>
+    <string name="error_not_your_turn">No es tu turno.</string>
+    <string name="error_game_not_active">La partida todavía no está activa.</string>
+    <string name="error_game_finished">La partida ya terminó.</string>
+    <string name="error_room_full">La sala está llena.</string>
+    <string name="error_already_in_game">Ya estás dentro de esa sala.</string>
+    <string name="error_not_host">Solo el anfitrión puede hacer eso.</string>
+    <string name="error_not_enough_players">Se necesitan al menos 2 jugadores.</string>
+    <string name="error_tile_not_in_hand">No tienes esa ficha.</string>
+    <string name="error_no_legal_end">Esa ficha no encaja en ese extremo.</string>
+    <string name="error_cannot_draw">No puedes robar ahora.</string>
+    <string name="error_cannot_pass">No puedes pasar ahora.</string>
+    <string name="error_no_powers_left">No te quedan usos de ese poder.</string>
+    <string name="error_invalid_target">Jugador u objetivo no válido.</string>
+    <string name="error_round_not_over">La ronda aún no ha terminado.</string>
+    <string name="error_invalid_action">Esa acción no está permitida ahora.</string>
+    <string name="error_unexpected">Ocurrió un error inesperado.</string>
 </resources>
