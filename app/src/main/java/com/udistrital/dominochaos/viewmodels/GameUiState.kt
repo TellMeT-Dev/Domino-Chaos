@@ -1,5 +1,7 @@
 package com.udistrital.dominochaos.viewmodels
 
+import android.content.Context
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.repositories.GameActionException
 import com.udistrital.dominochaos.domain.DominoTile
 import com.udistrital.dominochaos.domain.End
@@ -63,29 +65,29 @@ data class GameUiState(
     val opponents: List<PlayerUi> get() = players.filter { !it.isSessionPlayer }
 }
 
-fun GameError.asMessage(): String = when (this) {
-    GameError.GAME_NOT_FOUND -> "No se encontró la partida."
-    GameError.NOT_IN_GAME -> "No estás en esta partida."
-    GameError.NOT_YOUR_TURN -> "No es tu turno."
-    GameError.GAME_NOT_ACTIVE -> "La partida todavía no está activa."
-    GameError.GAME_FINISHED -> "La partida ya terminó."
-    GameError.ROOM_FULL -> "La sala está llena."
-    GameError.ALREADY_IN_GAME -> "Ya estás dentro de esa sala."
-    GameError.NOT_HOST -> "Solo el anfitrión puede hacer eso."
-    GameError.NOT_ENOUGH_PLAYERS -> "Se necesitan al menos 2 jugadores."
-    GameError.TILE_NOT_IN_HAND -> "No tienes esa ficha."
-    GameError.NO_LEGAL_END -> "Esa ficha no encaja en ese extremo."
-    GameError.CANNOT_DRAW -> "No puedes robar ahora."
-    GameError.CANNOT_PASS -> "No puedes pasar ahora."
-    GameError.NO_POWERS_LEFT -> "No te quedan usos de ese poder."
-    GameError.INVALID_TARGET -> "Jugador u objetivo no válido."
-    GameError.ROUND_NOT_OVER -> "La ronda aún no ha terminado."
-    GameError.INVALID_ACTION -> "Esa acción no está permitida ahora."
+fun GameError.asMessage(context: Context): String = when (this) {
+    GameError.GAME_NOT_FOUND -> context.getString(R.string.error_game_not_found)
+    GameError.NOT_IN_GAME -> context.getString(R.string.error_not_in_game)
+    GameError.NOT_YOUR_TURN -> context.getString(R.string.error_not_your_turn)
+    GameError.GAME_NOT_ACTIVE -> context.getString(R.string.error_game_not_active)
+    GameError.GAME_FINISHED -> context.getString(R.string.error_game_finished)
+    GameError.ROOM_FULL -> context.getString(R.string.error_room_full)
+    GameError.ALREADY_IN_GAME -> context.getString(R.string.error_already_in_game)
+    GameError.NOT_HOST -> context.getString(R.string.error_not_host)
+    GameError.NOT_ENOUGH_PLAYERS -> context.getString(R.string.error_not_enough_players)
+    GameError.TILE_NOT_IN_HAND -> context.getString(R.string.error_tile_not_in_hand)
+    GameError.NO_LEGAL_END -> context.getString(R.string.error_no_legal_end)
+    GameError.CANNOT_DRAW -> context.getString(R.string.error_cannot_draw)
+    GameError.CANNOT_PASS -> context.getString(R.string.error_cannot_pass)
+    GameError.NO_POWERS_LEFT -> context.getString(R.string.error_no_powers_left)
+    GameError.INVALID_TARGET -> context.getString(R.string.error_invalid_target)
+    GameError.ROUND_NOT_OVER -> context.getString(R.string.error_round_not_over)
+    GameError.INVALID_ACTION -> context.getString(R.string.error_invalid_action)
 }
 
-fun Throwable?.asMessage(): String = when (this) {
-    null -> "Ocurrió un error inesperado."
-    is GameActionException -> error.asMessage()
-    else -> message ?: "Ocurrió un error inesperado."
+fun Throwable?.asMessage(context: Context): String = when (this) {
+    null -> context.getString(R.string.error_unexpected)
+    is GameActionException -> error.asMessage(context)
+    else -> message ?: context.getString(R.string.error_unexpected)
 }
 

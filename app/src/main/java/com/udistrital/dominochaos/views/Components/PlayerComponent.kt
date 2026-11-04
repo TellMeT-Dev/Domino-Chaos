@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.viewmodels.PlayerUi
 
 
@@ -46,7 +48,7 @@ fun PlayerComponent(
                 maxLines = 1
             )
             Text(
-                text = "🁫 ${player.tileCount}  ·  ★ ${player.score}",
+                text = stringResource(R.string.player_stats, player.tileCount, player.score),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

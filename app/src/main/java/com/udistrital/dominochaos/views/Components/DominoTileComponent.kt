@@ -3,7 +3,9 @@ package com.udistrital.dominochaos.views.Components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,8 +45,7 @@ fun DominoTileComponent(
         selected -> MaterialTheme.colorScheme.primary
         else -> Color.Transparent
     }
-    val background = if (showFace) MaterialTheme.colorScheme.surfaceContainerHigh
-    else MaterialTheme.colorScheme.surfaceVariant
+    val background = Color.White
 
     Row(
         modifier = modifier
@@ -72,11 +73,23 @@ fun DominoTileComponent(
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "◆",
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                    fontSize = size.fontSize.sp
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(size.height * 0.14f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(size.width * 0.72f)
+                            .height(size.height * 0.16f)
+                            .background(Color(0xFF00AEFF))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(size.width * 0.72f)
+                            .height(size.height * 0.16f)
+                            .background(Color(0xFF00AEFF))
+                    )
+                }
             }
         }
     }
@@ -95,7 +108,7 @@ private fun RowScope.ValueHalf(value: Int, size: TileSize) {
             fontSize = size.fontSize.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface
+            color = Color(0xFF1F2937)
         )
     }
 }

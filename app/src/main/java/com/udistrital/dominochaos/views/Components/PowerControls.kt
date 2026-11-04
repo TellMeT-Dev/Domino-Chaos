@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.domain.Power
 import com.udistrital.dominochaos.domain.PowerUses
 import com.udistrital.dominochaos.domain.TurnOptions
@@ -36,24 +38,28 @@ fun PowerControls(
             selected = comodinActive,
             enabled = options.canUseComodin,
             onClick = { onToggleComodin(!comodinActive) },
-            label = { Text("★ Comodín ×$comodinUses") },
+            label = { Text(stringResource(R.string.power_comodin, comodinUses)) },
             colors = FilterChipDefaults.filterChipColors(
                 selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
 
         PowerChip(
-            label = "⚡ Salto ×${remaining.remaining(Power.SALTO)}",
+            label = stringResource(R.string.power_salto, remaining.remaining(Power.SALTO)),
             enabled = options.canSalto,
             onClick = { onUse(Power.SALTO) }
         )
         PowerChip(
-            label = "⇄ Intercambio ×${remaining.remaining(Power.INTERCAMBIO)}",
+            label = stringResource(
+                R.string.power_intercambio, remaining.remaining(Power.INTERCAMBIO)
+            ),
             enabled = options.canIntercambio,
             onClick = { onUse(Power.INTERCAMBIO) }
         )
         PowerChip(
-            label = "↺ Inversión ×${remaining.remaining(Power.INVERSION)}",
+            label = stringResource(
+                R.string.power_inversion, remaining.remaining(Power.INVERSION)
+            ),
             enabled = options.canInversion,
             onClick = { onUse(Power.INVERSION) }
         )

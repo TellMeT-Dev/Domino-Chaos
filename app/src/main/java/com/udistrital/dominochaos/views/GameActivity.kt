@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -156,8 +157,8 @@ class GameActivity : ComponentActivity() {
 private fun NoGameScreen(onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "No hay una partida activa.")
-            TextButton(onClick = onBack) { Text(text = "Volver al inicio") }
+            Text(text = stringResource(R.string.no_active_game))
+            TextButton(onClick = onBack) { Text(text = stringResource(R.string.back_to_home)) }
         }
     }
 }
