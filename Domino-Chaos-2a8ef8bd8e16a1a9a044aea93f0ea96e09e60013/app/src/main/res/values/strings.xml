@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">DominoChaos</string>
+
+    <string name="home_title">Welcome to Hockey Game</string>
+    <string name="home_btn_play">Play</string>
+    <string name="home_score">Your last score is</string>
+    <string name="home_btn_back">Back</string>
+
+    <string name="search_title">Search a Room</string>
+    <string name="search_title_label">Introduce your friend\'s code</string>
+    <string name="insert_code_button">Introduce a code</string>
+    <string name="start_game">Join to the Room</string>
+    <string name="cancel">Cancel and Exit</string>
+
+    <string name="toast_invalid_session">Invalid Session</string>
+
+
+</resources>
