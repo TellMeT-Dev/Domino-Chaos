@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 data class Player(
     val id: String,
     val name: String,
-    val isBot: Boolean = false,
     val hand: List<DominoTile> = emptyList(),
     val score: Int = 0,
     val powers: PowerUses = PowerUses(),
