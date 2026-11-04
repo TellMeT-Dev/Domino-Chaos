@@ -9,7 +9,8 @@ data class Player(
     val hand: List<DominoTile> = emptyList(),
     val score: Int = 0,
     val powers: PowerUses = PowerUses(),
-    val powersUsed: Int = 0
+    val powersUsed: Int = 0,
+    val isBot: Boolean = false
 ) {
     val pipsInHand: Int get() = hand.sumOf { it.pips }
 
