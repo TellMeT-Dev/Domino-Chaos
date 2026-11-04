@@ -13,10 +13,6 @@ import com.udistrital.dominochaos.R
 import com.udistrital.dominochaos.data.UserSession
 import com.udistrital.dominochaos.views.screens.LoginScreen
 
-/**
- * Pantalla de acceso: inicio de sesión y registro con Firebase Auth.
- * Si ya hay sesión iniciada entra directo a [GameActivity].
- */
 class AuthActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth

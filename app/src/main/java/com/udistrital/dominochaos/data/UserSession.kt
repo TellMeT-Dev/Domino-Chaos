@@ -5,13 +5,6 @@ import android.content.SharedPreferences
 import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
 
-/**
- * Sesión local del jugador.
- *
- * [playerId] es el identificador usado dentro de la partida: se toma de
- * Firebase Auth para que coincida con el `uid` de la sala. Solo se usa un
- * UUID local como último recurso (sin sesión iniciada).
- */
 class UserSession(context: Context) {
 
     private val prefs: SharedPreferences =

@@ -38,10 +38,6 @@ import com.udistrital.dominochaos.views.screens.RoomSelectionScreen
 import com.udistrital.dominochaos.views.screens.SearchScreen
 import com.udistrital.dominochaos.views.theme.DominoChaosTheme
 
-/**
- * Navegación de la versión en línea: HOME → SALAS → LOBBY → PARTIDA.
- * La sala y la partida comparten el mismo código.
- */
 class GameActivity : ComponentActivity() {
 
     private val roomViewModel: RoomViewModel by viewModels { roomViewModelFactory(this) }

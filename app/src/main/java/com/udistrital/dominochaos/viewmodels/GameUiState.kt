@@ -1,6 +1,6 @@
 package com.udistrital.dominochaos.viewmodels
 
-import com.udistrital.dominochaos.data.GameActionException
+import com.udistrital.dominochaos.repositories.GameActionException
 import com.udistrital.dominochaos.domain.DominoTile
 import com.udistrital.dominochaos.domain.End
 import com.udistrital.dominochaos.domain.GameError

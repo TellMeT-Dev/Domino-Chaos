@@ -1,8 +1,12 @@
 package com.udistrital.dominochaos.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.udistrital.dominochaos.data.GameRepository
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.google.firebase.database.ValueEventListener
 import com.udistrital.dominochaos.data.UserSession
 import com.udistrital.dominochaos.domain.End
 import com.udistrital.dominochaos.domain.Game
@@ -10,14 +14,13 @@ import com.udistrital.dominochaos.domain.GameAction
 import com.udistrital.dominochaos.domain.GameEngine
 import com.udistrital.dominochaos.domain.GameStatus
 import com.udistrital.dominochaos.domain.Player
+import com.udistrital.dominochaos.repositories.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 private data class Selection(
     val tileId: String? = null,
@@ -41,12 +44,15 @@ class GameViewModel(
 
     private var joinAttempts = 0
 
-    private val gameFlow: StateFlow<Game?> = repo.observeGame(code)
-        .onEach { game -> autoJoinIfNeeded(game) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val _game = MutableStateFlow<Game?>(null)
+
+    private val gameListener: ValueEventListener = repo.observeGame(code) { game ->
+        _game.value = game
+        autoJoinIfNeeded(game)
+    }
 
     val uiState: StateFlow<GameUiState> = combine(
-        gameFlow,
+        _game,
         selection,
         busy,
         errorMsg
@@ -55,9 +61,6 @@ class GameViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GameUiState(code = code))
 
 
-    // ---------------------------------------------------------------------
-    // Selección de ficha / opciones
-    // ---------------------------------------------------------------------
 
     fun selectTile(tileId: String?) = selection.update { current ->
         when {
@@ -77,9 +80,6 @@ class GameViewModel(
         errorMsg.value = null
     }
 
-    // ---------------------------------------------------------------------
-    // Acciones de juego
-    // ---------------------------------------------------------------------
 
     fun playAt(end: End) {
         val sel = selection.value
@@ -111,25 +111,16 @@ class GameViewModel(
     fun restart() = submit(myId, GameAction.RestartMatch)
 
     fun leave(onLeft: () -> Unit) {
-        viewModelScope.launch {
-            busy.value = true
-            val result = repo.leaveGame(code, myId)
+        busy.value = true
+        repo.leaveGame(code, myId) { error ->
             busy.value = false
-            if (result.isFailure) errorMsg.value = result.exceptionOrNull().asMessage()
+            if (error != null) errorMsg.value = error.asMessage()
             onLeft()
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Internos
-    // ---------------------------------------------------------------------
 
 
-    /**
-     * El invitado se une solo a la partida cuando el anfitrión ya la creó:
-     * si la sala sigue en espera y yo todavía no estoy dentro, me una.
-     * En modo en línea cada jugador solo actúa consigo mismo.
-     */
     private fun autoJoinIfNeeded(game: Game?) {
         if (game == null || joinAttempts >= MAX_JOIN_ATTEMPTS) return
         if (game.player(myId) != null) return
@@ -137,25 +128,26 @@ class GameViewModel(
 
         joinAttempts++
         val name = session.playerName ?: "Jugador"
-        viewModelScope.launch {
-            repo.joinGame(code, Player(id = myId, name = name))
-        }
+        repo.joinGame(code, Player(id = myId, name = name)) { }
     }
 
     private fun submit(playerId: String, action: GameAction, silent: Boolean = false) {
-        viewModelScope.launch {
-            busy.value = true
-            val result = repo.submitAction(code, playerId, action)
+        busy.value = true
+        repo.submitAction(code, playerId, action) { error ->
             busy.value = false
-            if (result.isFailure && !silent) {
-                errorMsg.value = result.exceptionOrNull().asMessage()
+            if (error != null && !silent) {
+                errorMsg.value = error.asMessage()
             }
-            if (result.isSuccess && action is GameAction.Play) {
+            if (error == null && action is GameAction.Play) {
                 selection.value = Selection()
             }
         }
     }
 
+    override fun onCleared() {
+        repo.stopObserving(code, gameListener)
+        super.onCleared()
+    }
 
 
     private fun buildState(game: Game?, sel: Selection, isBusy: Boolean, error: String?): GameUiState {
@@ -226,3 +218,10 @@ class GameViewModel(
         const val MAX_JOIN_ATTEMPTS = 3
     }
 }
+
+fun gameViewModelFactory(context: Context, code: String): ViewModelProvider.Factory =
+    viewModelFactory {
+        initializer {
+            GameViewModel(GameRepository(), UserSession(context.applicationContext), code)
+        }
+    }

@@ -40,9 +40,6 @@ sealed class GameResult {
 
 object GameEngine {
 
-    // ---------------------------------------------------------------------
-    // Creación y membresía
-    // ---------------------------------------------------------------------
 
     fun createGame(
         code: String,
@@ -112,9 +109,6 @@ object GameEngine {
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Acciones del anfitrión y de ronda
-    // ---------------------------------------------------------------------
 
     private fun startMatch(game: Game, playerId: String, rng: Random): GameResult {
         if (game.status != GameStatus.WAITING) return failure(game, GameError.GAME_NOT_ACTIVE)
@@ -192,9 +186,6 @@ object GameEngine {
         )
     }
 
-    // ---------------------------------------------------------------------
-    // Jugadas
-    // ---------------------------------------------------------------------
 
     private fun play(
         game: Game,
@@ -236,7 +227,6 @@ object GameEngine {
         )
 
         return if (players.first { it.id == player.id }.hand.isEmpty()) {
-            // Se fue: fin de ronda por salida.
             Success(finishRound(next, player.id, RoundEndReason.WENT_OUT))
         } else {
             Success(endTurn(next))
@@ -317,9 +307,6 @@ object GameEngine {
         )
     }
 
-    // ---------------------------------------------------------------------
-    // Turnos y fin de ronda
-    // ---------------------------------------------------------------------
 
     private fun endTurn(game: Game, skipExtra: Int = 0): Game {
         val newTurn = (game.turnIndex + 1 + skipExtra) % game.players.size
@@ -354,9 +341,6 @@ object GameEngine {
         )
     }
 
-    // ---------------------------------------------------------------------
-    // Consultas para la interfaz (solo lectura, sin cambiar el estado)
-    // ---------------------------------------------------------------------
 
     fun hasNaturalMove(game: Game, player: Player): Boolean =
         player.hand.any { tile -> game.board.naturalEnds(tile).isNotEmpty() }

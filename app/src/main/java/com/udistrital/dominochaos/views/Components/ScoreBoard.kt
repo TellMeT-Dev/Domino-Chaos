@@ -15,10 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.udistrital.dominochaos.viewmodels.PlayerUi
 
-/**
- * Marcador compacto con el puntaje de todos los jugadores.
- * Solo presenta [PlayerUi]; los datos los calcula el ViewModel.
- */
 @Composable
 fun ScoreBoard(
     players: List<PlayerUi>,

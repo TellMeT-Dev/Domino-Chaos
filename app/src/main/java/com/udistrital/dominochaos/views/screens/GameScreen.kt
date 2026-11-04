@@ -45,11 +45,6 @@ import com.udistrital.dominochaos.views.Components.PlayerComponent
 import com.udistrital.dominochaos.views.Components.PowerControls
 import com.udistrital.dominochaos.views.Components.ScoreBoard
 
-/**
- * Pantalla de juego: pinta el [GameUiState] y envía las acciones al
- * [GameViewModel]. Aquí NO se validan jugadas: los extremos legales, la mano
- * jugable y los poderes disponibles llegan ya calculados desde el motor.
- */
 @Composable
 fun GameScreen(
     vm: GameViewModel,
@@ -102,7 +97,6 @@ private fun GameBody(
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Marcador + salir ------------------------------------------------
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -115,7 +109,6 @@ private fun GameBody(
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
-        // Información general ---------------------------------------------
         Text(
             text = buildString {
                 append("Ronda ${state.round}/${state.maxRounds}")
@@ -127,7 +120,6 @@ private fun GameBody(
         )
 
 
-        // Rivales ----------------------------------------------------------
         if (state.opponents.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 items(state.opponents, key = { it.id }) { opponent ->
@@ -136,7 +128,6 @@ private fun GameBody(
             }
         }
 
-        // Tablero ----------------------------------------------------------
         BoardComponent(
             chain = state.chain,
             leftEnd = state.leftEnd,
@@ -147,7 +138,6 @@ private fun GameBody(
             modifier = Modifier.weight(1f)
         )
 
-        // Opciones de jugada ------------------------------------------------
         if (state.myTurn) {
             SelectionOptions(state = state, vm = vm)
             PowerControls(
@@ -184,18 +174,13 @@ private fun GameBody(
             )
         }
 
-        // Mi mano ------------------------------------------------------------
         HandRow(state = state, vm = vm)
 
-        // Sala de espera ------------------------------------------------------
         if (state.isWaiting) {
             WaitingPanel(state = state, vm = vm)
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Diálogos
-    // ---------------------------------------------------------------------
 
     state.error?.let { message ->
         AlertDialog(
@@ -251,9 +236,6 @@ private fun GameBody(
     }
 }
 
-// ---------------------------------------------------------------------
-// Secciones
-// ---------------------------------------------------------------------
 
 @Composable
 private fun SelectionOptions(state: GameUiState, vm: GameViewModel) {
@@ -385,9 +367,6 @@ private fun WaitingPanel(state: GameUiState, vm: GameViewModel) {
     }
 }
 
-// ---------------------------------------------------------------------
-// Diálogos de resultados e intercambio
-// ---------------------------------------------------------------------
 
 @Composable
 private fun RoundResultDialog(state: GameUiState, onNextRound: () -> Unit) {

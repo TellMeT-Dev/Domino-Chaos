@@ -1,31 +1,28 @@
 package com.udistrital.dominochaos.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.udistrital.dominochaos.data.GameRepository
 import com.udistrital.dominochaos.data.UserSession
 import com.udistrital.dominochaos.data.models.PlayerModel
 import com.udistrital.dominochaos.data.models.RoomModel
 import com.udistrital.dominochaos.domain.GameConfig
 import com.udistrital.dominochaos.domain.GameMode
 import com.udistrital.dominochaos.domain.Player
+import com.udistrital.dominochaos.repositories.GameRepository
 import com.udistrital.dominochaos.repositories.RoomRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * Ciclo de vida de la sala en línea:
- *  1. crear sala **y** partida (`games/{codigo}`),
- *  2. observar la sala en tiempo real (el anfitrión ve al invitado),
- *  3. unirse a la sala por código,
- *  4. cancelar/limpiar al salir.
- */
 class RoomViewModel(
     private val repository: RoomRepository,
     private val gameRepository: GameRepository,
@@ -41,9 +38,6 @@ class RoomViewModel(
     private var roomListener: ValueEventListener? = null
     private var observedKey: String = ""
 
-    // ---------------------------------------------------------------------
-    // Crear sala (anfitrión)
-    // ---------------------------------------------------------------------
 
     fun createRoom(onResult: (Boolean) -> Unit) {
         val user = auth.currentUser
@@ -65,7 +59,6 @@ class RoomViewModel(
             _model.value = roomHandle.room
             observe(roomHandle.key)
 
-            // La partida en línea comparte el código de la sala.
             val code = roomHandle.room.id.orEmpty()
             val gameCreated = gameRepository.createGame(
                 code = code,
@@ -75,7 +68,6 @@ class RoomViewModel(
             )
 
             if (gameCreated.isFailure) {
-                // Si no se puede crear la partida, no dejamos una sala huérfana.
                 stopObserving()
                 repository.deleteRoom(roomHandle.key)
                 handle = null
@@ -86,9 +78,6 @@ class RoomViewModel(
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Unirse a una sala (invitado)
-    // ---------------------------------------------------------------------
 
     fun joinRoom(roomCode: String, onResult: (Boolean) -> Unit) {
         val user = auth.currentUser
@@ -97,12 +86,11 @@ class RoomViewModel(
             return
         }
 
-        viewModelScope.launch {
-            val guest = PlayerModel(uid = user.uid, email = user.email.orEmpty())
-            val joined = repository.joinRoom(roomCode, guest).getOrNull()
+        val guest = PlayerModel(uid = user.uid, email = user.email.orEmpty())
+        repository.joinRoom(roomCode, guest) { joined ->
             if (joined == null) {
                 onResult(false)
-                return@launch
+                return@joinRoom
             }
 
             handle = joined
@@ -112,9 +100,6 @@ class RoomViewModel(
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Salir de la sala
-    // ---------------------------------------------------------------------
 
     fun cancelRoom() {
         val current = handle ?: return
@@ -124,21 +109,17 @@ class RoomViewModel(
         viewModelScope.launch {
             if (isHost) {
                 repository.deleteRoom(current.key)
-                gameRepository.leaveGame(code, session.playerId)
             } else {
                 repository.freeSpot(current.key)
-                gameRepository.leaveGame(code, session.playerId)
             }
         }
+        gameRepository.leaveGame(code, session.playerId) { }
 
         stopObserving()
         handle = null
         _model.value = null
     }
 
-    // ---------------------------------------------------------------------
-    // Observación en tiempo real
-    // ---------------------------------------------------------------------
 
     private fun observe(key: String) {
         stopObserving()
@@ -166,3 +147,10 @@ class RoomViewModel(
         super.onCleared()
     }
 }
+
+fun roomViewModelFactory(context: Context): ViewModelProvider.Factory =
+    viewModelFactory {
+        initializer {
+            RoomViewModel(RoomRepository(), GameRepository(), UserSession(context.applicationContext))
+        }
+    }
