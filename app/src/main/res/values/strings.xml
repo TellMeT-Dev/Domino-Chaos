@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">DominoChaos</string>
 
-    <!-- Inicio -->
     <string name="home_title">Domino Chaos</string>
     <string name="home_subtitle">Juega en línea con otro jugador</string>
     <string name="home_mode_label">MODO DE JUEGO</string>
@@ -10,14 +9,12 @@
     <string name="home_footer">Domino Chaos · 2026 · Multijugador en línea</string>
     <string name="logout">Cerrar sesión</string>
 
-    <!-- Buscar sala -->
     <string name="search_title">Buscar sala</string>
     <string name="search_title_label">Introduce el código de tu amigo</string>
     <string name="insert_code_button">Código de la sala</string>
     <string name="start_game">Unirse a la sala</string>
     <string name="cancel">Cancelar y salir</string>
 
-    <!-- Errores -->
     <string name="error_create_room">No se pudo crear la sala. Revisa tu conexión.</string>
     <string name="error_join_room">No se pudo unir a esa sala. Verifica el código.</string>
     <string name="error_auth">No se pudo iniciar sesión. Revisa tus datos.</string>
