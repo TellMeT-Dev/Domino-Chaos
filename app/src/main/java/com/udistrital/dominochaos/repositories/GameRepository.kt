@@ -15,6 +15,11 @@ import com.udistrital.dominochaos.domain.GameResult
 import com.udistrital.dominochaos.domain.Player
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 class GameRepository {
 
@@ -23,14 +28,9 @@ class GameRepository {
 
     private fun gameRef(code: String): DatabaseReference = gamesRef.child(code)
 
-    private fun encode(game: Game): String =
-        json.encodeToString(Game.serializer(), game)
+    private fun encode(game: Game): Any? = game.toDatabaseValue()
 
-    private fun decode(raw: String): Game? =
-        runCatching { json.decodeFromString(Game.serializer(), raw) }.getOrNull()
-
-    private fun decode(snapshot: DataSnapshot): Game? =
-        snapshot.getValue(String::class.java)?.let { decode(it) }
+    private fun decode(snapshot: DataSnapshot): Game? = decodeGame(snapshot.value)
 
 
     suspend fun createGame(
@@ -164,7 +164,6 @@ class GameRepository {
 
     private companion object {
         const val GAMES_NODE = "games"
-        val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     }
 }
 
@@ -172,3 +171,48 @@ class GameActionException(
     val error: GameError,
     detail: String = error.name
 ) : Exception(detail)
+
+private val gameJson = Json {
+    ignoreUnknownKeys = true
+    encodeDefaults = true
+    coerceInputValues = true
+    explicitNulls = false
+}
+
+internal fun Game.toDatabaseValue(): Any? =
+    gameJson.encodeToJsonElement(Game.serializer(), this).toFirebaseValue()
+
+internal fun decodeGame(raw: Any?): Game? = runCatching {
+    when (raw) {
+        null -> null
+        is String -> gameJson.decodeFromString(Game.serializer(), raw)
+        else -> gameJson.decodeFromJsonElement(Game.serializer(), raw.toJsonElement())
+    }
+}.getOrNull()
+
+private fun JsonElement.toFirebaseValue(): Any? = when (this) {
+    is JsonObject -> entries
+        .associate { (key, value) -> key to value.toFirebaseValue() }
+        .filterValues { it != null }
+
+    is JsonArray -> map { it.toFirebaseValue() }
+    JsonNull -> null
+    is JsonPrimitive -> when {
+        isString -> content
+        content == "true" || content == "false" -> content == "true"
+        else -> content.toLongOrNull() ?: content.toDoubleOrNull() ?: content
+    }
+}
+
+private fun Any?.toJsonElement(): JsonElement = when (this) {
+    null -> JsonNull
+    is Map<*, *> -> JsonObject(
+        entries.associate { (key, value) -> key.toString() to value.toJsonElement() }
+    )
+
+    is List<*> -> JsonArray(map { it.toJsonElement() })
+    is Boolean -> JsonPrimitive(this)
+    is String -> JsonPrimitive(this)
+    is Number -> JsonPrimitive(this)
+    else -> JsonPrimitive(this.toString())
+}
