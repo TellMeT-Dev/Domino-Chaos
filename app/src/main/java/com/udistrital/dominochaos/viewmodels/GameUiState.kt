@@ -55,7 +55,6 @@ data class GameUiState(
     val winnerNames: List<String> = emptyList(),
     val busy: Boolean = false,
     val error: String? = null,
-    val botThinking: Boolean = false
 ) {
     val isWaiting: Boolean get() = status == GameStatus.WAITING
     val isRoundOver: Boolean get() = status == GameStatus.ROUND_OVER

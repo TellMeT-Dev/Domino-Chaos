@@ -10,7 +10,6 @@ data class Player(
     val score: Int = 0,
     val powers: PowerUses = PowerUses(),
     val powersUsed: Int = 0,
-    val isBot: Boolean = false
 ) {
     val pipsInHand: Int get() = hand.sumOf { it.pips }
 
