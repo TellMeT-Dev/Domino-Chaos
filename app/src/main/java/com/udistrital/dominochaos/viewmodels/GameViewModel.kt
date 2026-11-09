@@ -186,11 +186,9 @@ class GameViewModel(
                     name = player.name,
                     score = player.score,
                     tileCount = player.hand.size,
-                    isBot = player.isBot,
                     isCurrentTurn = current?.id == player.id && game.status == GameStatus.IN_PROGRESS,
                     isSessionPlayer = player.id == myId,
-                    powersUsed = player.powersUsed
-                )
+                    powersUsed = player.powersUsed)
             },
             handsById = game.players.associate { it.id to it.hand },
             chain = game.board.tiles,
@@ -211,9 +209,7 @@ class GameViewModel(
             roundResult = if (game.status == GameStatus.ROUND_OVER) game.roundResults.lastOrNull() else null,
             winnerNames = game.winnerIds.mapNotNull { id -> game.player(id)?.name },
             busy = isBusy,
-            error = error,
-            botThinking = current?.isBot == true && game.status == GameStatus.IN_PROGRESS
-        )
+            error = error)
     }
 
     private companion object {

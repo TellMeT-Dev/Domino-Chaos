@@ -18,7 +18,6 @@ data class PlayerUi(
     val name: String,
     val score: Int,
     val tileCount: Int,
-    val isBot: Boolean,
     val isCurrentTurn: Boolean,
     val isSessionPlayer: Boolean,
     val powersUsed: Int = 0
